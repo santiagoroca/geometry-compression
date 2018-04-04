@@ -1,0 +1,18 @@
+{
+	"geometry_byte_length": 2160,
+	"vertices_byte_length": 586,
+	"faces_byte_length": 1530,
+	"total_vertices": 780,
+	"transformation_vertex": {
+		"0": 0.18520000576972961,
+		"1": 0.05950000137090683,
+		"2": -2.1530001163482666,
+		"3": 2.750699996948242
+	},
+	"uv_vector": {
+		"0": 0.568359375,
+		"1": 0.0009765625
+	},
+	"total_symbols_after_tfan": 1140,
+	"length": 44
+} 
