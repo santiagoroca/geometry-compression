@@ -95,19 +95,25 @@ class Decompress:
         # Read the file until there's no more bytes to read
         while self.bytes_left_to_read > 0:
 
-            # Geometry Header
-            header = Header(model[cursor:cursor + HEADER_SIZE])
+            # Geometry Start
+            geometry_start = cursor + HEADER_SIZE
 
-            print(header.__dict__)
+            # Geometry Header
+            header = Header(model[cursor:geometry_start])
 
             # Empty array to fill up with vertices
-            vertices = []
+            vertices = [0] * header.v_count
 
             # Empty array to fill up with faces
             faces = []
 
             # Read Vertices to vertices array
-            # self.decode_vertices(model[padding + HEADER_SIZE: header.v_byte_l])
+            self.decode_vertices(
+                model[geometry_start:header.v_byte_l],
+                vertices,
+                header.t_vertex,
+                header.uv_vector
+            )
 
             # Reduce the bytes_left_to_read by the ammount of bytes readed
             self.bytes_left_to_read -= header.g_byte_l
@@ -116,24 +122,24 @@ class Decompress:
             cursor += header.g_byte_l
 
 
-    def decode_vertices(self, chain, vertices, t, uv):
+    def decode_vertices(self, b_array, v_out, t_vertex, uv_vector):
+
+        print(t_vertex)
 
         # for range(0, 9) => 1 << i
         masks = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 
+        # Local Data
         bit = 9
-
-        v = 0
-
-        c = 0
-
+        v_position = 0
+        t_vertex_position = 0
         vertex = 0
 
         # 2^10 - 1
         nlc = 1023
 
-        for i in len(chain):
-            byte = chain[i]
+        for i in range(len(b_array)):
+            byte = b_array[i]
 
             for e in reversed(range(7)):
 
@@ -141,21 +147,24 @@ class Decompress:
                     vertex |= masks[bit]
 
                 if bit == 0:
-                    vertices[v] = vertex / nlc * t[3] + t[c]
+                    print(v_position)
+                    v_out[v_position] = vertex / nlc * t_vertex[3] + t_vertex[t_vertex_position]
 
-                    v += 1
-                    c += 1
+                    v_position += 1
+                    t_vertex_position += 1
 
                     vertex = 0
                     bit = 0
 
-                    if c == 3:
-                        c = 0
-                        vertices[v] = uv[0]
-                        v += 1
+                    if t_vertex_position == 3:
 
-                        vertices[v] = uv[1]
-                        v += 1
+                        t_vertex_position = 0
+
+                        v_out[v_position] = uv_vector[0]
+                        v_position += 1
+
+                        v_out[v_position] = uv_vector[1]
+                        v_position += 1
 
                 else:
                     bit -= 1
