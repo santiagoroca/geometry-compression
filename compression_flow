@@ -1,0 +1,34 @@
+
+#
+#
+#
+
+function mesh_compression (int[] faces, float[] vertices, float[] uv = null) ->
+
+    #
+    #
+    Vertices = vertices.map(x, y, z => new Vertice(x, y, z))
+
+    #
+    #
+    vec3[] [ max_coordinate, min_coordinate ] = vertices.getMaxMinCoordinatesVector3()
+
+    #
+    #
+    vec3[] diagonal = max_coordinate - min_coordinate
+
+    #
+    #
+    float scale = MAX(diagonal.x, diagonal.y)
+          scale = MAX(scale, diagonal.z)
+
+    #
+    #
+    float translation = min_coordinate
+
+    #
+    #
+    vertices = vertices.map(
+      XYZ => XYZ - translation / scale,
+      throws("Error") if XYZ.components not in range [0,1]
+    )
