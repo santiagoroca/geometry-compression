@@ -87,7 +87,8 @@ class VerticesDecoder():
 
                     # Research - We're appending the new vertex
                     # More explanation needed here
-                    out.append(vertex / nlc) * t[3] + t[vertex_index++]
+                    out.append(vertex / nlc * t[3] + t[vertex_index])
+                    vertex_index += 1
 
                     # Reset the vertext to zero to start accumulating
                     # bits again
