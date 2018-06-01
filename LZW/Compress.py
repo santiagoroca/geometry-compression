@@ -43,7 +43,7 @@ class Compress:
         # Prefix Starts empty and stores the biggest match found in dictionary
         prefix = ""
 
-        # Create the dictionary containing the first two bit values
+        # Creates a dictionary pre-filled with the 256 ASCII codes
         dictionary  = { chr(x): int(x) for x in range(255) }
 
         # Binary Output
@@ -51,8 +51,6 @@ class Compress:
 
         # Current Code starts from 256 (all posible chars in ASCII)
         code = 256
-
-        print(dictionary)
 
         for char in sbReader.readstring(data):
 

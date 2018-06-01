@@ -1,4 +1,5 @@
 import struct
+from decode_vertices import VerticesDecoder
 
 from array import array
 
@@ -101,16 +102,12 @@ class Decompress:
             # Geometry Header
             header = Header(model[cursor:geometry_start])
 
-            # Empty array to fill up with vertices
-            vertices = [0] * header.v_count
-
             # Empty array to fill up with faces
             faces = []
 
             # Read Vertices to vertices array
             self.decode_vertices(
                 model[geometry_start:header.v_byte_l],
-                vertices,
                 header.t_vertex,
                 header.uv_vector
             )
@@ -122,52 +119,9 @@ class Decompress:
             cursor += header.g_byte_l
 
 
-    def decode_vertices(self, b_array, v_out, t_vertex, uv_vector):
-
-        print(t_vertex)
-
-        # for range(0, 9) => 1 << i
-        masks = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
-
-        # Local Data
-        bit = 9
-        v_position = 0
-        t_vertex_position = 0
-        vertex = 0
-
-        # 2^10 - 1
-        nlc = 1023
-
-        for i in range(len(b_array)):
-            byte = b_array[i]
-
-            for e in reversed(range(7)):
-
-                if byte & masks[e] != 0:
-                    vertex |= masks[bit]
-
-                if bit == 0:
-                    print(v_position)
-                    v_out[v_position] = vertex / nlc * t_vertex[3] + t_vertex[t_vertex_position]
-
-                    v_position += 1
-                    t_vertex_position += 1
-
-                    vertex = 0
-                    bit = 0
-
-                    if t_vertex_position == 3:
-
-                        t_vertex_position = 0
-
-                        v_out[v_position] = uv_vector[0]
-                        v_position += 1
-
-                        v_out[v_position] = uv_vector[1]
-                        v_position += 1
-
-                else:
-                    bit -= 1
+    def decode_vertices(self, b_array, t_vertex, uv_vector):
+        verticesDecoder = VerticesDecoder()
+        print(verticesDecoder.decode(b_array, t_vertex, uv_vector))[1:10]
 
 
     def get_size(self, fileobject):

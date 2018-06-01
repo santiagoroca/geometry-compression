@@ -68,6 +68,7 @@ class Uncompress:
             # Previous code is now the current code just created
             prev_code = current_code
 
+        print(len(out), len(data))
 
         # Diplay
         print(out)
